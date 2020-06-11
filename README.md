@@ -6,3 +6,5 @@ opencv is an open source software library for computer vision, machine learning 
 
 ## installation
 1. go to [the opencv site](https://opencv.org). go to releases and find the latest version of opencv and click on android.
+
+![alt step1](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/1_installation.png)
