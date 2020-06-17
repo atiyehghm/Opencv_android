@@ -57,3 +57,26 @@ static {
             Log.i(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^Opencv is not working properly!!");
     }
  ```
+
+## OpenCV packages
+After creating an opencv android project, let's take a look at packages within opencvLibrary
+
+![alt packages](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/packages.png)
+
+| package name  | description   |
+| ------------- |:-------------:|
+| Android       | The main purpose of this package is to make opencv usable on android devices.               |
+| calib3d       | If you are capturing an object, this package can determine the 3D coordinates of the object.|
+| core          | It provides the base functionality of opencv. For example, it does the mathematical or matrix operations or some implemented algorithms.(Note that it does not do any image processing.)|
+|features2d     | It's a package for 2D image feature detectors and decriptor extrcators.                     |  
+|dnn            | This is a package for deep neural network algorithms.                                       |
+|imgcodecs      | This package loads images from disc or writes on disc. This is used in those applications that don't get the image from camera. It's used for reading single or multiple images of different formats.|
+|imgproc        | It has all the functions for manipulating images. you can use it to apply effects, blur image, write text on image and so on.|
+|ml             | This package is for machine learning(artificial intelligence). It has some training algorithms for computer vision.|
+|osgi           | This package provides an easy way to load opencv's native libraries from java bundle.       |
+|photo          | It's used for image enhancement. You can apply manipulations like setting the contrast, hue, saturation, etc.|
+|utils          | It's used for converting image data from one mathematical format to another.                |
+|video          | It does video processing like applying filters, tracking objects and more.                  |
+|videoio        | It is used for reading and writing video files of any format.                               |
+
+
