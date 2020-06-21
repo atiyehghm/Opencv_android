@@ -1,3 +1,0 @@
-include ':app'
-rootProject.name='Opencv_android'
-include ':openCVLibrary3410'
