@@ -204,4 +204,10 @@ also we should define `mRGBA` and `mRGBAT` in the `MainActivity`. These `Mat` ob
     }
 ```
 Here, in `onResume` method, if opencv was loaded properly we give a `SUCCESS` status to `BaseLoaderCallback`.
+____
 
+## Face Detection App
+In order to understand better, we write a face detection app using the haarcascades algorithm with this library.
+For this, you need to do all the steps above (includes integrate project with openCV library, set camera permission and add javaCameraView with id of appCameraView in main_activity.xml file ).
+
+Because in this app we want to use the haarcascades algorithm for detecting faces, we need a xml file that exists in the openCV library. In the openCV library go to `sdk > etc > haarcascades` and then copy `haarcascade_frontalface_alt2.xml` file, then in `resource` project folder(`res`), create `android resource directory` with `raw` resource type and optional name (e.g: raw) and paste copied file here.
