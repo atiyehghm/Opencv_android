@@ -230,3 +230,30 @@ After that, in `MainActivity` and in its `onCreate` method, create an object fro
         javaCameraView.setCvCameraViewListener(this);
         
 ```
+
+By implementing `CameraBridgeViewBase.CvCameraViewListener2` interface we should override `onCameraViewStarted`, `onCameraViewStopped` and `onCameraFrame` method.
+As explained above, in the first two methods we create and release `Mat` object called `mRgba` and in third one `mRgba` initialized with bitmap matrix of camera frame, then it must then be processed and generate output. 
+
+```
+        private Mat mRgba;
+        
+        @Override
+        public void onCameraViewStarted(int width, int height) {
+                mRgba = new Mat();
+        }
+
+        @Override
+        public void onCameraViewStopped() {
+                mRgba.release();
+        }
+
+        @Override
+        public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+
+        //detect face
+        
+        return mRgba;
+        }
+        
+```
