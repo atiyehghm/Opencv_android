@@ -303,4 +303,25 @@ private BaseLoaderCallback baseCallback = new BaseLoaderCallback(this) {
 ```
 
 So far we initialized openCV in our project and loaded cascade classifire in to the application. Now we should implement `detect face` part in `onCameraFrame` method.
+Here we create `MatOfRect` object which stores the rectangle that that bound the faces in the frame. Then we call a function called `detectMultiScale` on our `CascadeClassifier` object to detect faces. This function takes in a grayscale image and if there is any faces in the frame, it returns rectangles that bound the faces.
+After we called this function, we have an array of faces and we should iterate throught it and draw rectangle for each detected faces. For this we use `rectangle(Mat img, Point pt1, Point pt2, Scalar color)` method of `Imgproc` class. `Imgproc` is class related to image processing.
+`rectangle` method takes in `Mat` object, two points for start and end and a color. Here we used it with red color (rgb = (255, 0, 0)).
 
+```
+@Override
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        mRgba = inputFrame.rgba();
+        mGray = inputFrame.gray();
+
+        //detect face
+
+        MatOfRect faceDetections = new MatOfRect();
+        faceDetector.detectMultiScale(mGray, faceDetections);
+        for(Rect rect: faceDetections.toArray()){
+            Imgproc.rectangle(mRgba, new Point(rect.x, rect.y),
+                    new Point(rect.x + rect.width, rect.y + rect.height),
+                    new Scalar(255,0,0));
+        }
+        return mRgba;
+}
+```
