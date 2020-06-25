@@ -378,7 +378,7 @@ We override `onActivityResult` function like this:
 }
 ```
 Now we have our image and we can start our work using Firebase. First you need to go to [Firebase Console](https://console.firebase.google.com/u/0/). Then click on `Add project`. Pick a name for your project and create it. Then select Android in your project page. In the shown form, write your `applicationId` and then click `Register app`.
-![alt firebase-add-to-project.png](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/f-3.png.png)
+![alt firebase-add-to-project.png](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/f-3.png)
 Then download `google-services.json` file and after that click `Next`. For connecting your app to Firebase you need to put this file in your app folder of your project. In android studio, change files view type to from `Android` to `Project` and now put `google-services.json` file in `app` folder.
 After that according to `Add Firebase SDK` instruction, add below line to `dependencies` part of `Project-level build.gradle` file.
 ```
