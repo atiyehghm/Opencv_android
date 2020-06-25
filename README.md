@@ -208,6 +208,7 @@ ____
 
 ## Face Detection App
 In order to understand better, we write a face detection app using the haarcascades algorithm with this library.
+Face detection using Haar feature-based cascade classifiers is a machine learning based approach where a cascade function is trained from a lot of images that they may have faces in them or not. It is then used to detect faces in other images. OpenCV provide pre-learnt cascade for Haar algorithm.
 For this, you need to do all the steps above (includes integrate project with openCV library, set camera permission and add `javaCameraView` with id of `appCameraView` in `main_activity.xml` file ).
 
 Because in this app we want to use the haarcascades algorithm for detecting faces, we need a xml file that exists in the openCV library. In the openCV library go to `sdk > etc > haarcascades` and then copy `haarcascade_frontalface_alt2.xml` file, then in `resource` project folder(`res`), create `android resource directory` with `raw` resource type and optional name (e.g: raw) and paste copied file here.
@@ -215,45 +216,91 @@ Because in this app we want to use the haarcascades algorithm for detecting face
 After that, in `MainActivity` and in its `onCreate` method, create an object from the `JavaCameraView` class to connect it to its view and then write code for load openCV. As mentioned above, if this library loads properly a `SUCCESS` status passes to `BaseLoaderCallback`. Here this callback is `baseCallback` which will be defined later. Next, in `MainActivity` we should implement `CameraBridgeViewBase.CvCameraViewListener2` interface and call `setCvCameraViewListener` method on `javaCameraView` object.
 
 ```
-        javaCameraView = (JavaCameraView) findViewById(R.id.appCameraView);
+javaCameraView = (JavaCameraView) findViewById(R.id.appCameraView);
 
-        if (!OpenCVLoader.initDebug()){
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, baseCallback);
-        }
-        else {
-            try {
-                baseCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        javaCameraView.setCvCameraViewListener(this);
+if (!OpenCVLoader.initDebug()){
+    OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, baseCallback);
+}
+else {
+    try {
+        baseCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+javaCameraView.setCvCameraViewListener(this);
         
 ```
 
 By implementing `CameraBridgeViewBase.CvCameraViewListener2` interface we should override `onCameraViewStarted`, `onCameraViewStopped` and `onCameraFrame` method.
-As explained above, in the first two methods we create and release `Mat` object called `mRgba` and in third one `mRgba` initialized with bitmap matrix of camera frame, then it must then be processed and generate output. 
+As explained above, in the first two methods we create and release `Mat` objects called `mRgba` and `mGray`. `mRgba`stores the rgbscale and `mGray` stores the grayscale image of the camera output. In third method those `Mat` objects initialized with bitmap matrix of camera frame, then they must be processed and generate output. 
 
 ```
-        private Mat mRgba;
+private Mat mRgba, mGray;
+
+@Override
+public void onCameraViewStarted(int width, int height) {
+        mRgba = new Mat();
+        mGray = new Mat();
         
-        @Override
-        public void onCameraViewStarted(int width, int height) {
-                mRgba = new Mat();
-        }
+}
 
-        @Override
-        public void onCameraViewStopped() {
-                mRgba.release();
-        }
+@Override
+public void onCameraViewStopped() {
+        mRgba.release();
+        mGray.release();
+}
 
-        @Override
-        public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+@Override
+public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
+        mGray = inputFrame.gray();
 
         //detect face
-        
+
         return mRgba;
-        }
+}
         
 ```
+We later replace`detect face` part with process for detect faces.
+Now we implement `baseCallback` which is `BaseLoaderCallback` and override `onManagerConnected` methode in it. `onManagerConnected` received `status` argument, when this status is `SUCCESS` we must load `haarcascade` from `xml` file in resources and pass it to `CascadeClassifier` class.
+We load the cascade file from project resource to our application using `InputStream` and `FileOutputStream` as shown below. We create a new folder `cascade` and copy the content of cascade file to a new file in that folder. The reason why we copy and save at the same time is to bring the file from our project directory into phone's filesystem.
+Next. Create a new `CascadeClassifier` object called `faceDetector` which will be used for detect faces and if it doesn't created successfully we assign null to this object.
+Next step is to get our camera preview ready.
+
+```
+private BaseLoaderCallback baseCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) throws IOException {
+            switch (status){
+                case LoaderCallbackInterface.SUCCESS:{
+                    InputStream inputStream = getResources().openRawResource(R.raw.haarcascade_frontalface_alt2);
+                    File cascadeDir = getDir("cascade", Context.MODE_PRIVATE);
+                    casoFile = new File(cascadeDir, "haarcascade_frontalface_alt2.xml");
+                    FileOutputStream fileOutputStream = new FileOutputStream(casoFile);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1){
+                        fileOutputStream.write(buffer, 0, bytesRead);
+                    }
+                    inputStream.close();
+                    fileOutputStream.close();
+
+                    faceDetector = new CascadeClassifier(casoFile.getAbsolutePath());
+
+                    if (faceDetector.empty()){
+                        faceDetector = null;
+                    }
+                    javaCameraView.enableView();
+                }
+                break;
+                default:
+                    super.onManagerConnected(status);
+            }
+        }
+};
+
+```
+
+So far we initialized openCV in our project and loaded cascade classifire in to the application. Now we should implement `detect face` part in `onCameraFrame` method.
+
