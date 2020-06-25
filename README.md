@@ -211,7 +211,7 @@ In order to understand better, we write a face detection app using the haarcasca
 Face detection using Haar feature-based cascade classifiers is a machine learning based approach where a cascade function is trained from a lot of images that they may have faces in them or not. It is then used to detect faces in other images. OpenCV provide pre-learnt cascade for Haar algorithm.
 For this, you need to do all the steps above (includes integrate project with openCV library, set camera permission and add `javaCameraView` with id of `appCameraView` in `main_activity.xml` file ).
 
-Because in this app we want to use the haarcascades algorithm for detecting faces, we need a xml file that exists in the openCV library. In the openCV library go to `sdk > etc > haarcascades` and then copy `haarcascade_frontalface_alt2.xml` file, then in `resource` project folder(`res`), create `android resource directory` with `raw` resource type and optional name (e.g: raw) and paste copied file here.
+Because in this app we want to use the haarcascades algorithm for detecting faces, we need a xml file that exists in the openCV library. In the openCV library go to `sdk -> etc -> haarcascades` and then copy `haarcascade_frontalface_alt2.xml` file, then in `resource` project folder(`res`), create `android resource directory` with `raw` resource type and optional name (e.g: raw) and paste copied file here.
 
 After that, in `MainActivity` and in its `onCreate` method, create an object from the `JavaCameraView` class to connect it to its view and then write code for load openCV. As mentioned above, if this library loads properly a `SUCCESS` status passes to `BaseLoaderCallback`. Here this callback is `baseCallback` which will be defined later. Next, in `MainActivity` we should implement `CameraBridgeViewBase.CvCameraViewListener2` interface and call `setCvCameraViewListener` method on `javaCameraView` object.
 
@@ -325,3 +325,10 @@ After we called this function, we have an array of faces and we should iterate t
         return mRgba;
 }
 ```
+In the repository you can see the whole project in DetectFace folder.
+
+Here we show some pictures from result of this app and how it works:
+
+![alt detect-kid-face](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/detect_face_1.png)
+
+![alt detect-woman-face](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/detect_face_2.png)
