@@ -332,3 +332,121 @@ Here we show some pictures from result of this app and how it works:
 ![alt detect-kid-face](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/detect_face_1.png)
 
 ![alt detect-woman-face](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/detect_face_2.png)
+
+
+## Firebase Machine Learning Kit
+There is another way to use machine learning in android applications which Google support it and that's Firebase ML Kit. Firebase ML Kit provides users the feature of Machine Learning such as Language Translator, Text Recognizance, etc. Working with firebase is so easy. In order to show the simplicity of this process, here is an example of a Firebase text recognition application.
+
+First create a new project, in this project we want a view like this:
+
+![alt text-detection-app-view](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/text-detection-app-view.png)
+
+When `CAPTURE IMAGE` button is pressed, camera will open and after you take a photo, this photo will be shown in top part and with pressing of `DETECT TEXT` button, if there is any text in that picture you can see it on top of the buttons and below the picture. So you have foure item here, two Button, a TextView and an ImageView.
+First in `activity_main.xml` file design the view.
+Then in `MainActivity.java` match your view elements with their related java class. Next step is opening camera when `CAPTURE IMAGE` button is pressed. For this step one is set the permission in manifest file.
+
+```
+<manifest ... >
+    <uses-feature android:name="android.hardware.camera"
+                  android:required="true" />
+    ...
+</manifest>
+```
+Then write a `setOnClickListener` for `CAPTURE IMAGE` button. In the body of this listener, call `dispatchTakePictureIntent` function. This function is written below:
+
+```
+private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+}
+```
+
+In the code above, basically we send a user to an external activity and allow the user to open the phone camera. When user takes a picture the`takePictureInten` Intent would be not null and the`startActivityForResult` function invokes.
+The Android camera delivered encoded photo as a Intent to `onActivityResult`. We can change that Intent to a `Bitmap` form  and then display it in our `photo` ImageView object.
+We override `onActivityResult` function like this:
+```
+ @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            imageBitmap = (Bitmap) extras.get("data");
+            photo.setImageBitmap(imageBitmap);
+        }
+}
+```
+Now we have our image and we can start our work using Firebase. First you need to go to [Firebase Console](https://console.firebase.google.com/u/0/). Then click on `Add project`. Pick a name for your project and create it. Then select Android in your project page. In the shown form, write your `applicationId` and then click `Register app`.
+![alt firebase-add-to-project.png](https://github.com/atiyehghm/Opencv_android/blob/master/README.md_images/f-3.png.png)
+Then download `google-services.json` file and after that click `Next`. For connecting your app to Firebase you need to put this file in your app folder of your project. In android studio, change files view type to from `Android` to `Project` and now put `google-services.json` file in `app` folder.
+After that according to `Add Firebase SDK` instruction, add below line to `dependencies` part of `Project-level build.gradle` file.
+```
+dependencies {
+    ...
+    // Add this line
+    classpath 'com.google.gms:google-services:4.3.3'
+}
+```
+Next in `App-level build.gradle` file, below the `dependencies` part add this line:
+```
+apply plugin: 'com.google.gms.google-services'
+```
+Now go to next step in Firebase instrucuon page. For use ML feature of Firebase you need to add these two lines in your `dependencies` part in `App-level build.gradle` too. One proplem here is latest version of firebase-ml-vision is not free and if you can pay for it you can use free version of it. Versions below 16 are free and we can use them without paying.
+```
+implementation 'com.google.firebase:firebase-core:15.0.2'
+implementation 'com.google.firebase:firebase-ml-vision:15.0.0'
+
+```
+
+Then add this `meta-data` to manifest file:
+```
+<activity android:name=".MainActivity">
+        ...
+            <meta-data
+                android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+                android:value="ocr" />
+        ...
+</activity>
+```
+
+Now we are ready to use Firebase for text recognition in our project. We write a function for text recognition and call it in `setOnClickListener` of `DETECT TEXT` button.
+
+```
+private void detectTextFromImage() {
+        FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
+        FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
+        firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+            @Override
+            public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                displayTheImageText(firebaseVisionText);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+}
+```
+In the above function first we convert `imageBitmap` to a `FirebaseVisionImage` object. Then create an instant from `FirebaseVisionTextDetector` class and by using this object and our previous `FirebaseVisionImage` object text recongnition can be happend. If Firebase `detectInImage` function can detect text in the image, `displayTheImageText` function will be invoked using `firebaseVisionText` argument which is an instance of `FirebaseVisionText` class and if not a toast appears with the related error message.
+Our last work is to implement `displayTheImageText` function and show the text in TextView part.
+```
+private void displayTheImageText(FirebaseVisionText firebaseVisionText) {
+List<FirebaseVisionText.Block> blockList = firebaseVisionText.getBlocks();
+if(blockList.size() == 0){
+    Toast.makeText(MainActivity.this, "No text found in image!!", Toast.LENGTH_SHORT).show();
+}
+else{
+    for (FirebaseVisionText.Block block: firebaseVisionText.getBlocks()){
+        String text = block.getText();
+        detectedText.setText(text);
+    }
+}
+}
+    
+```
+`firebaseVisionText` object consists of some `FirebaseVisionText.Block`. In first line we create a list of these blocks, then we compare the size of this list with zero to see if there is any text in the picture or not. If not we display a toast with `No text found in image!!` message and if there is any text in the picture we iterate through that list and get each block corresponding text, then pass this text to our TextView object and display it.
+You can find the whole codes of this project in `TextRecognizer` folder in this repository.
+
+Thanks...
