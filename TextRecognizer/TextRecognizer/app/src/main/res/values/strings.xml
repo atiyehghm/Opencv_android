@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TextRecognizer</string>
+    <string name="capture">Capture Image</string>
+    <string name="detect">Detect Text</string>
+</resources>

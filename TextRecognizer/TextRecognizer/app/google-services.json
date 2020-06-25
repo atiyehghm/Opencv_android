@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "550332475612",
+    "firebase_url": "https://textrcognizer-ad1cc.firebaseio.com",
+    "project_id": "textrcognizer-ad1cc",
+    "storage_bucket": "textrcognizer-ad1cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550332475612:android:806f831a0d7128c0642c19",
+        "android_client_info": {
+          "package_name": "com.atiyeh.textrecognizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550332475612-2qv5carrs7e4ok4ujvv6rf0bc3j26ci0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVntylz5VTJMPTxBXRdfjYCi6bKPdZJto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550332475612-2qv5carrs7e4ok4ujvv6rf0bc3j26ci0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
